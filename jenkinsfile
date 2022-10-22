@@ -1,0 +1,28 @@
+pipeline {
+    agent { label 'OPENJDK-11-JDK' }
+    stages {
+        stage('vcs') {
+            steps {
+                git url: 'https://github.com/longflewtinku/python-webcount.git',
+                    branch: 'master'
+            }
+        }
+        stage('build packages') {
+            steps {
+                sh 'pip3 install -r requirements.txt'
+                sh  'tox'
+                   
+            }
+        }
+        stage('archive') {
+            steps {
+                archiveArtifacts artifacts: '**/*.zip', followSymlinks: false
+            }
+        }
+        stage('junits') {
+            steps {
+                junit  junit '**/*.xml'
+            }
+        }   
+    }
+}    
